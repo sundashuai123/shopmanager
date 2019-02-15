@@ -31,7 +31,7 @@ export default {
           console.log(res)
           const {
             data: {
-              data,
+              // data,
               meta: { msg, status }
             }
           } = res
