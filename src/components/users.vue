@@ -35,13 +35,23 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" width="200">
-        <template slot-scope="scope">
+        <template slot-scope>
           <el-button type="primary" icon="el-icon-edit" circle size="mini" plain></el-button>
           <el-button type="danger" icon="el-icon-delete" circle size="mini" plain></el-button>
           <el-button type="success" icon="el-icon-check" circle size="mini" plain></el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      class="page"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[2, 4,6,8]"
+      :page-size="2"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+    ></el-pagination>
   </el-card>
 </template>
 
@@ -51,7 +61,8 @@ export default {
     return {
       query: '',
       pagenum: 1,
-      pagesize: 2,
+      pagesize: 5,
+      total: -1,
       list: []
     }
   },
@@ -59,6 +70,17 @@ export default {
     this.getTableData()
   },
   methods: {
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+      this.pagenum = 1
+      this.pagesize = val
+      this.getTableData()
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      this.pagenum = val
+      this.getTableData()
+    },
     async getTableData () {
       const AUTH_TOKEN = localStorage.getItem('token')
       this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
@@ -68,6 +90,14 @@ export default {
         }`
       )
       console.log(res)
+      const {
+        data,
+        meta: { status }
+      } = res.data
+      if (status === 200) {
+        this.list = data.users
+        this.total = data.total
+      }
     }
   }
 }
