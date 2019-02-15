@@ -117,7 +117,16 @@ export default {
       this.$message.warning('请先登录')
     }
   },
-  mounted () {}
+  mounted () {},
+  methods: {
+    handleLoginout () {
+      localStorage.clear()
+      this.$router.push({
+        name: 'login'
+      })
+      this.$message.warning('退出成功')
+    }
+  }
 }
 </script>
 
