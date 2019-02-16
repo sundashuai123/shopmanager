@@ -52,6 +52,27 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisibleAdd">
+      <!-- 表单 -->
+      <el-form label-position="left" label-width="80px" :model="formdata">
+        <el-form-item label="用户名">
+          <el-input v-model="formdata.username"></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="formdata.password"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="formdata.email"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="formdata.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisibleAdd = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -63,7 +84,14 @@ export default {
       pagenum: 1,
       pagesize: 6,
       total: -1,
-      list: []
+      list: [],
+      dialogFormVisibleAdd: false,
+      formdata: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      }
     }
   },
   created () {
@@ -98,6 +126,9 @@ export default {
         this.list = data.users
         this.total = data.total
       }
+    },
+    showDiaAddUser () {
+      this.dialogFormVisibleAdd = true
     },
     getAllUsers () {
       this.getTableData()
