@@ -47,8 +47,8 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pagenum"
-      :page-sizes="[2, 4,6,8]"
-      :page-size="2"
+      :page-sizes="[2,4,6,8]"
+      :page-size="6"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
@@ -61,7 +61,7 @@ export default {
     return {
       query: '',
       pagenum: 1,
-      pagesize: 5,
+      pagesize: 6,
       total: -1,
       list: []
     }
@@ -98,6 +98,13 @@ export default {
         this.list = data.users
         this.total = data.total
       }
+    },
+    getAllUsers () {
+      this.getTableData()
+    },
+    searchUser () {
+      this.pagenum = 1
+      this.getTableData()
     }
   }
 }
