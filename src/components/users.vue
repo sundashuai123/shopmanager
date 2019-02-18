@@ -36,7 +36,14 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" circle size="mini" plain></el-button>
+          <el-button
+            @click="showDiaEditUser(scope.row)"
+            type="primary"
+            icon="el-icon-edit"
+            circle
+            size="mini"
+            plain
+          ></el-button>
           <el-button
             @click="showMsgBoxDele(scope.row)"
             type="danger"
@@ -80,6 +87,26 @@
         <el-button type="primary" @click="addUser ()">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
+      <!-- 表单 -->
+      <el-form label-position="left" label-width="80px" :model="formdata">
+        <el-form-item label="用户名">
+          <el-input disabled v-model="formdata.username"></el-input>
+        </el-form-item>
+
+        <el-form-item label="邮箱">
+          <el-input v-model="formdata.email"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="formdata.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+        <el-button type="primary" @click="editUser()">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -93,6 +120,7 @@ export default {
       total: -1,
       list: [],
       dialogFormVisibleAdd: false,
+      dialogFormVisibleEdit: false,
       formdata: {
         username: '',
         password: '',
@@ -175,6 +203,24 @@ export default {
         .catch(() => {
           this.$message.info('取消删除')
         })
+    },
+    async editUser () {
+      const res = await this.$http.put(
+        `users/${this.formdata.id}`,
+        this.formdata
+      )
+      const {
+        meta: { status }
+      } = res.data
+      if (status === 200) {
+        this.dialogFormVisibleEdit = false
+        this.getTableData()
+      }
+    },
+
+    showDiaEditUser (user) {
+      this.dialogFormVisibleEdit = true
+      this.formdata = user
     }
   }
 }
