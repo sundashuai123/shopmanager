@@ -5,13 +5,12 @@ import App from './App'
 import router from './router'
 import CusBread from '@/components/cusBread.vue'
 import ElementUI from 'element-ui'
-import axios from 'axios'
 import moment from 'moment'
+import HttpServer from '@/http.js'
 import '@/assets/css/base.css'
 import 'element-ui/lib/theme-chalk/index.css'
-axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
 
-Vue.prototype.$http = axios
+Vue.use(HttpServer)
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 
