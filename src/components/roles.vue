@@ -105,6 +105,19 @@ export default {
       if (status === 200) {
         this.roles = data
       }
+    },
+    async deleRights (role, rights) {
+      const res = await this.$http.delete(
+        `roles/${role.id}/rights/${rights.id}`
+      )
+      const {
+        meta: { msg, status },
+        data
+      } = res.data
+      if (status === 200) {
+        this.$message.success(msg)
+        role.children = data
+      }
     }
   }
 }
