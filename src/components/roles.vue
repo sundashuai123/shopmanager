@@ -87,86 +87,85 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       roles: [],
       dialogFormVisible: false,
       treelist: [],
       arrCheck: [],
       defaultProps: {
-        label: 'authName',
-        children: 'children'
+        label: "authName",
+        children: "children"
       },
       currRoleId: -1
-    }
+    };
   },
-  created () {
-    this.getRoles()
+  created() {
+    this.getRoles();
   },
   methods: {
-    async getRoles () {
-      const res = await this.$http.get(`roles`)
+    async getRoles() {
+      const res = await this.$http.get(`roles`);
       const {
         meta: { status },
         data
-      } = res.data
+      } = res.data;
       if (status === 200) {
-        this.roles = data
+        this.roles = data;
       }
     },
-    async deleRights (role, rights) {
+    async deleRights(role, rights) {
       const res = await this.$http.delete(
         `roles/${role.id}/rights/${rights.id}`
-      )
+      );
       const {
         meta: { msg, status },
         data
-      } = res.data
+      } = res.data;
       if (status === 200) {
-        this.$message.success(msg)
-        role.children = data
+        this.$message.success(msg);
+        role.children = data;
       }
     },
-    async showDiaSetRights (role) {
-      this.currRoleId = role.id
-      const res = await this.$http.get(`rights/tree`)
+    async showDiaSetRights(role) {
+      this.currRoleId = role.id;
+      const res = await this.$http.get(`rights/tree`);
       const {
         meta: { status },
         data
-      } = res.data
+      } = res.data;
       if (status === 200) {
-        this.treelist = data
-        const temp2 = []
+        this.treelist = data;
+        const temp2 = [];
         role.children.forEach(item1 => {
           item1.children.forEach(item2 => {
             item2.children.forEach(item3 => {
-              temp2.push(item3.id)
-            })
-          })
-        })
-        this.arrCheck = temp2
+              temp2.push(item3.id);
+            });
+          });
+        });
+        this.arrCheck = temp2;
       }
-      this.dialogFormVisible = true
+      this.dialogFormVisible = true;
     },
-    async setRights () {
-      const arr1 = this.$refs.treeDom.getCheckedKeys()
-      const arr2 = this.$refs.treeDom.getHalfCheckedKeys()
-      const arr = [...arr1, ...arr2]
+    async setRights() {
+      const arr1 = this.$refs.treeDom.getCheckedKeys();
+      const arr2 = this.$refs.treeDom.getHalfCheckedKeys();
+      const arr = [...arr1, ...arr2];
       const res = await this.$http.post(`roles/${this.currRoleId}/rights`, {
-        rids: arr.join(',')
-      })
+        rids: arr.join(",")
+      });
       const {
         meta: { status },
         data
-      } = res.data
+      } = res.data;
       if (status === 200) {
-        this.dialogFormVisible = false
-        this.getRoles()
-        console.log(data)
+        this.dialogFormVisible = false;
+        this.getRoles();
       }
     }
   }
-}
+};
 </script>
 
 <style>
