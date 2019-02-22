@@ -21,7 +21,7 @@
         <el-button type="success" @click="showDiaAddUser()">添加用户</el-button>
       </el-col>
     </el-row>
-    <el-table height="350px" :data="list" style="width: 100%">
+    <el-table v-loading="loading" height="350px" :data="list" style="width: 100%">
       <el-table-column prop="id" label="#" width="80"></el-table-column>
       <el-table-column prop="username" label="姓名" width="120"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="140"></el-table-column>
@@ -145,146 +145,148 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      query: '',
+      query: "",
       pagenum: 1,
       pagesize: 6,
       total: -1,
       list: [],
+      loading: true,
       dialogFormVisibleAdd: false,
       dialogFormVisibleEdit: false,
       dialogFormVisibleRole: false,
       formdata: {
-        username: '',
-        password: '',
-        email: '',
-        mobile: ''
+        username: "",
+        password: "",
+        email: "",
+        mobile: ""
       },
       selectVal: -1,
       currUserId: -1,
       roles: []
-    }
+    };
   },
-  created () {
-    this.getTableData()
+  created() {
+    this.getTableData();
   },
   methods: {
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-      this.pagenum = 1
-      this.pagesize = val
-      this.getTableData()
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.pagenum = 1;
+      this.pagesize = val;
+      this.getTableData();
     },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
-      this.pagenum = val
-      this.getTableData()
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.pagenum = val;
+      this.getTableData();
     },
-    async getTableData () {
+    async getTableData() {
       const res = await this.$http.get(
         `users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${
           this.pagesize
         }`
-      )
-      console.log(res)
+      );
+      console.log(res);
       const {
         data,
         meta: { status }
-      } = res.data
+      } = res.data;
       if (status === 200) {
-        this.list = data.users
-        this.total = data.total
+        this.list = data.users;
+        this.total = data.total;
+        this.loading = false;
       }
     },
-    showDiaAddUser () {
-      this.dialogFormVisibleAdd = true
-      this.formdata = {}
+    showDiaAddUser() {
+      this.dialogFormVisibleAdd = true;
+      this.formdata = {};
     },
-    getAllUsers () {
-      this.getTableData()
+    getAllUsers() {
+      this.getTableData();
     },
-    searchUser () {
-      this.pagenum = 1
-      this.getTableData()
+    searchUser() {
+      this.pagenum = 1;
+      this.getTableData();
     },
-    async addUser () {
-      const res = await this.$http.post(`users`, this.formdata)
+    async addUser() {
+      const res = await this.$http.post(`users`, this.formdata);
       const {
         meta: { status }
-      } = res.data
+      } = res.data;
       if (status === 201) {
-        this.dialogFormVisibleAdd = false
-        this.getTableData()
+        this.dialogFormVisibleAdd = false;
+        this.getTableData();
       }
     },
-    showMsgBoxDele (user) {
-      this.$confirm('确定要删除么？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+    showMsgBoxDele(user) {
+      this.$confirm("确定要删除么？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
       })
         .then(async () => {
-          const res = await this.$http.delete(`users/${user.id}`)
+          const res = await this.$http.delete(`users/${user.id}`);
           const {
             meta: { msg, status }
-          } = res.data
+          } = res.data;
           if (status === 200) {
-            this.$message.success(msg)
-            this.pagenum = 1
-            this.getTableData()
+            this.$message.success(msg);
+            this.pagenum = 1;
+            this.getTableData();
           }
         })
         .catch(() => {
-          this.$message.info('取消删除')
-        })
+          this.$message.info("取消删除");
+        });
     },
-    async editUser () {
+    async editUser() {
       const res = await this.$http.put(
         `users/${this.formdata.id}`,
         this.formdata
-      )
+      );
       const {
         meta: { status }
-      } = res.data
+      } = res.data;
       if (status === 200) {
-        this.dialogFormVisibleEdit = false
-        this.getTableData()
+        this.dialogFormVisibleEdit = false;
+        this.getTableData();
       }
     },
-    async changeState (user) {
+    async changeState(user) {
       const res = await this.$http.put(
         `users/${user.id}/state/${user.mg_state}`
-      )
-      console.log(res)
+      );
+      console.log(res);
     },
-    showDiaEditUser (user) {
-      this.dialogFormVisibleEdit = true
-      this.formdata = user
+    showDiaEditUser(user) {
+      this.dialogFormVisibleEdit = true;
+      this.formdata = user;
     },
-    async showDiaSetRole (user) {
-      this.dialogFormVisibleRole = true
-      this.formdata = user
-      this.currUserId = user.id
-      const res = await this.$http.get(`roles`)
-      this.roles = res.data.data
-      const res2 = await this.$http.get(`users/${user.id}`)
-      console.log(res2)
-      this.selectVal = res2.data.data.rid
+    async showDiaSetRole(user) {
+      this.dialogFormVisibleRole = true;
+      this.formdata = user;
+      this.currUserId = user.id;
+      const res = await this.$http.get(`roles`);
+      this.roles = res.data.data;
+      const res2 = await this.$http.get(`users/${user.id}`);
+      console.log(res2);
+      this.selectVal = res2.data.data.rid;
     },
-    async setRole () {
+    async setRole() {
       const res = await this.$http.put(`users/${this.currUserId}/role`, {
         rid: this.selectVal
-      })
+      });
       const {
         meta: { status }
-      } = res.data
+      } = res.data;
       if (status === 200) {
-        this.dialogFormVisibleRole = false
+        this.dialogFormVisibleRole = false;
       }
     }
   }
-}
+};
 </script>
 
 <style>
